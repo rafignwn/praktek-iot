@@ -5,6 +5,7 @@ import { db } from "../firebase";
 export default function Dashboard() {
   const [value, setValue] = useState<number>(0);
   const [sensorValue, setSensorValue] = useState<number>(0);
+  const [kelembaban, setKelembaban] = useState<number>(0);
 
   useEffect(() => {
     const unsubValue = onValue(
@@ -13,6 +14,17 @@ export default function Dashboard() {
         const data: number = snapshot.val();
         console.log(data);
         setValue(data);
+      },
+      (error) => {
+        console.log("Terjadi Error", error);
+      }
+    );
+
+    const unsubKelembaban = onValue(
+      ref(db, "kelembaban"),
+      (snapshot) => {
+        const data: number = snapshot.val();
+        setKelembaban(data);
       },
       (error) => {
         console.log("Terjadi Error", error);
@@ -35,6 +47,7 @@ export default function Dashboard() {
     return () => {
       unsubValue();
       unsubSensor();
+      unsubKelembaban();
     };
   });
 
@@ -53,7 +66,8 @@ export default function Dashboard() {
   return (
     <div>
       <h1>Simple IOT</h1>
-      <p>Nilai Sensor = {sensorValue}</p>
+      <p>Nilai Suhu = {sensorValue}</p>
+      <p>Nilai Kelembaban = {kelembaban}</p>
       <button onClick={handleOnOff} className={value == 0 ? "on" : "off"}>
         {value == 0 ? "Lampu ON" : "Lampu OFF"}
       </button>
